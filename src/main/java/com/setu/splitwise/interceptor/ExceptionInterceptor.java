@@ -23,7 +23,7 @@ public class ExceptionInterceptor {
       return handleError(serverException);
     }
     ServerException serverException = new ServerException(HttpStatus.INTERNAL_SERVER_ERROR,
-        "Some issue with server");
+        ex.getMessage());
     return handleError(serverException);
   }
 

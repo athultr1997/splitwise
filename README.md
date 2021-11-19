@@ -1,7 +1,7 @@
 # Splitwise
 
 * Separate domain and persistence models
-* Payment outlives the split that created it
+* Payment outlives the split that created it. A payment entity has a life on its own without the split
 * BigDecimal used
 * Serializable used
 * Interceptor converts all exceptions to responses
@@ -17,3 +17,4 @@
 * Delete Split
 * Send Reminders
 * Pay using payment gateway
+* Multicurrency support
