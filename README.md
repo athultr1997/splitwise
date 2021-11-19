@@ -38,8 +38,8 @@ at: [postman collection](https://www.getpostman.com/collections/764056a2e67484d5
 
 ### Database
 
-H2 database is used currently. You can view the tables and schema by visiting the following url
-after the application has started:
+H2 database is used currently. It is configured to act as an in-memory database by default. You can
+view the tables and schema by visiting the following url after the application has started:
 
 ```
 http://localhost:8080/h2-ui
@@ -56,6 +56,11 @@ JDBC URL: jdbc:h2:mem:splitwisedb
 User Name: athul
 Password: password
 ```
+
+### Scripts
+
+A script is run during startup that populates the database with some users for easy
+testing. [link](https://github.com/athultr1997/splitwise/blob/main/src/main/java/com/setu/splitwise/scripts/PopulateUserService.java)
 
 ## Design
 
