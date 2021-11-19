@@ -1,7 +1,9 @@
 package com.setu.splitwise.service.domain;
 
 import com.setu.splitwise.enums.BalanceType;
+import com.setu.splitwise.exception.ServerException;
 import com.setu.splitwise.model.persistence.Bill;
+import com.setu.splitwise.model.persistence.Payment;
 import com.setu.splitwise.model.response.GetBalanceResponse;
 import com.setu.splitwise.model.response.GetBalanceResponse.BalanceDistribution;
 import java.math.BigDecimal;
@@ -23,13 +25,26 @@ public class BalanceService {
   @Autowired
   private BillService billService;
 
-  public GetBalanceResponse getBalance(String userIdAsString) {
-    // TODO userId check
-    // TODO subtract payments
-    Long userId = Long.valueOf(userIdAsString);
-    Set<Bill> bills = billService.getBillsInvolvingUserId(userId);
+  @Autowired
+  private PaymentService paymentService;
+
+  public GetBalanceResponse getBalance(Long userId) throws ServerException {
+    userService.validate(userId);
     Map<Long, BigDecimal> userIdToAmountMap = new HashMap<>(10);
     BigDecimal totalAmount = BigDecimal.ZERO;
+    totalAmount = balanceBills(userId, totalAmount, userIdToAmountMap);
+    totalAmount = balanceSettlementPayments(userId, totalAmount, userIdToAmountMap);
+    return GetBalanceResponse
+        .builder()
+        .amount(totalAmount.abs())
+        .balanceType(BalanceType.findBalanceType(totalAmount))
+        .balanceDistributions(constructBalanceDistributions(userIdToAmountMap))
+        .build();
+  }
+
+  private BigDecimal balanceBills(Long userId, BigDecimal totalAmount,
+      Map<Long, BigDecimal> userIdToAmountMap) {
+    Set<Bill> bills = billService.getBillsInvolvingUserId(userId);
     BigDecimal amount;
     for (Bill bill : bills) {
       if (userId.equals(bill.getCreditTo())) {
@@ -42,12 +57,25 @@ public class BalanceService {
         userIdToAmountMap.put(bill.getCreditTo(), amount.subtract(bill.getAmount()));
       }
     }
-    return GetBalanceResponse
-        .builder()
-        .amount(totalAmount.abs())
-        .balanceType(BalanceType.findBalanceType(totalAmount))
-        .balanceDistributions(constructBalanceDistributions(userIdToAmountMap))
-        .build();
+    return totalAmount;
+  }
+
+  private BigDecimal balanceSettlementPayments(Long userId, BigDecimal totalAmount,
+      Map<Long, BigDecimal> userIdToAmountMap) {
+    Set<Payment> payments = paymentService.getPaymentsInvolvingUserId(userId);
+    BigDecimal amount;
+    for (Payment payment : payments) {
+      if (userId.equals(payment.getCreditTo())) {
+        amount = userIdToAmountMap.getOrDefault(payment.getDebitFrom(), BigDecimal.ZERO);
+        totalAmount = totalAmount.add(payment.getAmount());
+        userIdToAmountMap.put(payment.getDebitFrom(), amount.subtract(payment.getAmount()));
+      } else {
+        amount = userIdToAmountMap.getOrDefault(payment.getCreditTo(), BigDecimal.ZERO);
+        totalAmount = totalAmount.subtract(payment.getAmount());
+        userIdToAmountMap.put(payment.getCreditTo(), amount.add(payment.getAmount()));
+      }
+    }
+    return totalAmount;
   }
 
   private List<BalanceDistribution> constructBalanceDistributions(

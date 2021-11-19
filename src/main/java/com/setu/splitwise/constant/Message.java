@@ -10,6 +10,8 @@ public class Message {
 
   public static final String SETTLEMENT_CONTRAINTS_VIOLATED = "one or more constraints are violated";
 
+  public static final String RESOURCE_NOT_FOUND = "resource not found";
+
   private Message() {
     throw new IllegalStateException("Message is a utility class");
   }

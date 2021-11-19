@@ -8,6 +8,7 @@ import com.setu.splitwise.model.response.CreateSettlementResponse;
 import com.setu.splitwise.service.manager.PaymentManager;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,10 @@ public class PaymentService {
 
   @Autowired
   private UserService userService;
+
+  public Set<Payment> getPaymentsInvolvingUserId(Long userId) {
+    return paymentManager.getPaymentsInvolvingUserId(userId);
+  }
 
   public CreateSettlementResponse createSettlementPayment(
       CreateSettlementRequest request) throws ServerException {

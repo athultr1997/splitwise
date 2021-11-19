@@ -8,6 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Currency;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -25,6 +26,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.apache.commons.collections4.CollectionUtils;
 
 @Entity
 @Table(name = "split")
@@ -39,6 +41,9 @@ public class Split {
   @GeneratedValue(strategy = GenerationType.AUTO, generator = "split-seq")
   @Column(name = "id")
   private Long id;
+
+  @Column(name = "created_by")
+  private Long createdBy;
 
   @Column(name = "title")
   private String title;
@@ -86,6 +91,31 @@ public class Split {
       transaction.setSplit(this);
     }
     this.transactions = transactions;
+  }
+
+  public Integer getNumberOfPeoplePaid() {
+    return Optional.ofNullable(this.transactions)
+        .filter(CollectionUtils::isNotEmpty)
+        .map(transactionsCopy -> transactionsCopy.stream()
+            .filter(transaction -> transaction.getPaid() != null &&
+                BigDecimal.ZERO.compareTo(transaction.getPaid()) < 1)
+            .count())
+        .map(Long::intValue)
+        .orElse(0);
+  }
+
+  public Transaction getTransactionByUserId(Long userId) {
+    return Optional.ofNullable(this.transactions)
+        .filter(CollectionUtils::isNotEmpty)
+        .map(transactionsCopy -> transactionsCopy.stream()
+            .filter(transaction -> userId.equals(transaction.getUserId()))
+            .findFirst())
+        .map(Optional::get)
+        .orElse(null);
+  }
+
+  public String getCurrencySymbol() {
+    return Optional.ofNullable(this.currency).map(Currency::getSymbol).orElse(null);
   }
 
 }

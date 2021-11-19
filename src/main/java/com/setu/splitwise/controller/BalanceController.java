@@ -24,7 +24,7 @@ public class BalanceController {
    * @throws ServerException
    */
   @GetMapping(name = "balance_get", path = "/balance/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public GetBalanceResponse getBalance(@PathVariable String userId)
+  public GetBalanceResponse getBalance(@PathVariable Long userId)
       throws ServerException {
     return balanceService.getBalance(userId);
   }
