@@ -25,7 +25,7 @@ public class SplitBasicDetailsValidator extends SplitValidator {
         || request.getSplitType() == null
         || request.getCreatedBy() == null
         || CollectionUtils.isEmpty(request.getSplitDistributions())) {
-      throw new ServerException(HttpStatus.BAD_REQUEST, "");
+      throw new ServerException(HttpStatus.BAD_REQUEST, "mandatory parameters missing");
     }
     if (request.getCreatedAt() == null) {
       throw new ServerException(HttpStatus.BAD_REQUEST, "created_at is empty");

@@ -31,11 +31,10 @@ Else you can also use the following command to start the application:
 
 5. The server will be listening on port number `8080` by default.
 
-## Design
+### Postman Collection
 
-### Data Model
-
-![alt text](https://github.com/athultr1997/splitwise/blob/main/data_model.png)
+The postman collection for interacting with the server can be found
+at: [postman collection](https://www.getpostman.com/collections/764056a2e67484d5e178)
 
 ### Database
 
@@ -57,6 +56,12 @@ JDBC URL: jdbc:h2:mem:splitwisedb
 User Name: athul
 Password: password
 ```
+
+## Design
+
+### Data Model
+
+![alt text](https://github.com/athultr1997/splitwise/blob/main/data_model.png)
 
 ## Features
 
