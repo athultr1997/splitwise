@@ -32,7 +32,8 @@ Else you can also use the following command to start the application:
 5. The server will be listening on port number `8080` by default.
 
 ## Design
-### Objects
+### Data Model
+![alt text](https://github.com/athultr1997/splitwise/blob/main/data_model.png)
 
 
 ## Features
