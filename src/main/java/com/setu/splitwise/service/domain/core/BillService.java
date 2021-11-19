@@ -1,4 +1,4 @@
-package com.setu.splitwise.service.domain;
+package com.setu.splitwise.service.domain.core;
 
 import com.setu.splitwise.model.persistence.Bill;
 import com.setu.splitwise.service.manager.BillManager;

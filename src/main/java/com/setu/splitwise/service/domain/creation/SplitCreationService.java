@@ -54,7 +54,6 @@ public class SplitCreationService implements CreationService<Split, CreateSplitR
   }
 
   private Split createSplitWithBasicInfo(CreateSplitRequest request) {
-    LocalDateTime currentTime = LocalDateTime.now();
     return Split
         .builder()
         .createdBy(request.getCreatedBy())
@@ -62,8 +61,8 @@ public class SplitCreationService implements CreationService<Split, CreateSplitR
         .note(request.getNote())
         .amount(request.getAmount())
         .currency(request.getCurrency())
-        .createdAt(currentTime)
-        .updatedAt(currentTime)
+        .createdAt(request.getCreatedAt())
+        .updatedAt(request.getUpdatedAt())
         .build();
   }
 
@@ -73,7 +72,7 @@ public class SplitCreationService implements CreationService<Split, CreateSplitR
     return splitStrategy.createSplitTransactions(request);
   }
 
-  private Set<Bill> constructBills(Split split) {
+  private Set<Bill> constructBills(Split split) throws ServerException {
     SettlementStrategy settlementStrategy = settlementStrategyFactory
         .getSettlementStrategy(SettlementType.DEFAULT);
     return settlementStrategy.settle(split.getTransactions());

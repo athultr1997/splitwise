@@ -2,7 +2,7 @@ package com.setu.splitwise.controller;
 
 import com.setu.splitwise.exception.ServerException;
 import com.setu.splitwise.model.response.GetBalanceResponse;
-import com.setu.splitwise.service.domain.BalanceService;
+import com.setu.splitwise.service.domain.core.BalanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

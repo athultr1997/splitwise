@@ -1,7 +1,7 @@
 package com.setu.splitwise.scripts;
 
 import com.setu.splitwise.model.persistence.User;
-import com.setu.splitwise.service.domain.UserService;
+import com.setu.splitwise.service.domain.core.UserService;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;

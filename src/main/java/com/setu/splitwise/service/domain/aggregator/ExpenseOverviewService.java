@@ -1,17 +1,15 @@
-package com.setu.splitwise.service.domain;
+package com.setu.splitwise.service.domain.aggregator;
 
-import com.setu.splitwise.constant.Message;
 import com.setu.splitwise.enums.BalanceType;
 import com.setu.splitwise.exception.ServerException;
 import com.setu.splitwise.model.persistence.Payment;
 import com.setu.splitwise.model.persistence.Split;
 import com.setu.splitwise.model.persistence.Transaction;
-import com.setu.splitwise.model.persistence.User;
-import com.setu.splitwise.model.response.ExpenseOverview;
 import com.setu.splitwise.model.response.ExpenseOverview.Expense;
-import com.setu.splitwise.service.manager.UserManager;
+import com.setu.splitwise.service.domain.core.PaymentService;
+import com.setu.splitwise.service.domain.core.SplitService;
+import com.setu.splitwise.service.domain.core.UserService;
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -21,16 +19,15 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class ExpenseOverviewService implements AggregatorService<List<Expense>, Long> {
 
-  private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+  private static final Logger logger = LoggerFactory.getLogger(ExpenseOverviewService.class);
 
   @Autowired
-  private UserManager userManager;
+  private UserService userService;
 
   @Autowired
   private SplitService splitService;
@@ -38,21 +35,20 @@ public class UserService {
   @Autowired
   private PaymentService paymentService;
 
-  public void saveAll(List<User> users) {
-    userManager.saveAll(users);
+  @Override
+  public List<Expense> getOverview(Long userId) throws ServerException {
+    userService.validate(userId);
+    List<Expense> splitExpenses = constructSplitExpenses(userId);
+    List<Expense> paymentExpenses = constructPaymentExpenses(userId);
+    return merge(splitExpenses, paymentExpenses);
   }
 
-  public boolean checkUserIdsExist(List<Long> userIds) {
-    return userManager.checkUserIdsExist(userIds);
-  }
-
-  public ExpenseOverview getExpenseOverview(Long userId) throws ServerException {
-    validate(userId);
+  private List<Expense> constructSplitExpenses(Long userId) {
     Set<Split> splits = splitService.findAllSplitsInvolvingUserId(userId);
     if (CollectionUtils.isEmpty(splits)) {
       logger.info("splits involved by user: {} is empty", userId);
     }
-    List<Expense> expenses = splits.stream()
+    return splits.stream()
         .map(split -> Expense
             .builder()
             .createdAt(split.getCreatedAt())
@@ -61,30 +57,26 @@ public class UserService {
             .additionalInformation(createAdditionalInformation(userId, split))
             .build())
         .collect(Collectors.toList());
+  }
+
+  private List<Expense> constructPaymentExpenses(Long userId) {
     Set<Payment> payments = paymentService.getPaymentsInvolvingUserId(userId);
     if (CollectionUtils.isEmpty(payments)) {
       logger.info("payments involved by user: {} is empty", userId);
     }
-    List<Expense> expenses1 = payments.stream()
+    return payments.stream()
         .map(payment -> Expense
             .builder()
             .createdAt(payment.getCreatedAt())
             .title(createTitle(payment))
             .build())
         .collect(Collectors.toList());
-    List<Expense> expenses2 = Stream.concat(expenses.stream(), expenses1.stream())
-        .sorted(Comparator.comparing(Expense::getCreatedAt)).collect(Collectors.toList());
-    return ExpenseOverview
-        .builder()
-        .expenses(expenses2)
-        .build();
   }
 
-  // TODO move to validation service
-  public void validate(Long userId) throws ServerException {
-    if (!checkUserIdsExist(Collections.singletonList(userId))) {
-      throw new ServerException(HttpStatus.BAD_REQUEST, Message.INVALID_USER_IDS);
-    }
+  private List<Expense> merge(List<Expense> splitExpenses, List<Expense> paymentExpenses) {
+    return Stream.concat(splitExpenses.stream(), paymentExpenses.stream())
+        .sorted(Comparator.comparing(Expense::getCreatedAt).reversed())
+        .collect(Collectors.toList());
   }
 
   private String createDescription(Split split) {

@@ -3,7 +3,7 @@ package com.setu.splitwise.controller;
 import com.setu.splitwise.exception.ServerException;
 import com.setu.splitwise.model.request.CreateSettlementRequest;
 import com.setu.splitwise.model.response.CreateSettlementResponse;
-import com.setu.splitwise.service.domain.PaymentService;
+import com.setu.splitwise.service.domain.core.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;

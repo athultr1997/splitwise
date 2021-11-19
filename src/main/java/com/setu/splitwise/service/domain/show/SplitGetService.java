@@ -1,14 +1,11 @@
-package com.setu.splitwise.service.domain;
+package com.setu.splitwise.service.domain.show;
 
 import com.setu.splitwise.constant.Message;
 import com.setu.splitwise.exception.ServerException;
 import com.setu.splitwise.model.persistence.Split;
 import com.setu.splitwise.model.persistence.Transaction;
-import com.setu.splitwise.model.request.CreateSplitRequest;
-import com.setu.splitwise.model.response.CreateSplitResponse;
 import com.setu.splitwise.model.response.GetSplitResponse;
 import com.setu.splitwise.model.response.GetSplitResponse.SplitDistribution;
-import com.setu.splitwise.service.domain.creation.SplitCreationService;
 import com.setu.splitwise.service.manager.SplitManager;
 import java.util.Collections;
 import java.util.List;
@@ -20,23 +17,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SplitService {
+public class SplitGetService implements GetService<GetSplitResponse, Long> {
 
   @Autowired
   private SplitManager splitManager;
 
-  @Autowired
-  private SplitCreationService splitCreationService;
-
-  public CreateSplitResponse createSplit(CreateSplitRequest request) throws ServerException {
-    Split split = splitCreationService.create(request);
-    return CreateSplitResponse
-        .builder()
-        .id(split.getId())
-        .build();
-  }
-
-  public GetSplitResponse getSplitDetails(Long splitId) throws ServerException {
+  @Override
+  public GetSplitResponse get(Long splitId) throws ServerException {
     Split split = splitManager.getById(splitId);
     if (split == null) {
       throw new ServerException(HttpStatus.NOT_FOUND, Message.RESOURCE_NOT_FOUND);
@@ -67,10 +54,6 @@ public class SplitService {
             .owed(transaction.getOwed())
             .build())
         .collect(Collectors.toList());
-  }
-
-  public Set<Split> findAllSplitsInvolvingUserId(Long userId) {
-    return splitManager.findAllInvolvingUserId(userId);
   }
 
 }

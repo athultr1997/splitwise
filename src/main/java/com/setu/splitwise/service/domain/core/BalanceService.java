@@ -1,4 +1,4 @@
-package com.setu.splitwise.service.domain;
+package com.setu.splitwise.service.domain.core;
 
 import com.setu.splitwise.enums.BalanceType;
 import com.setu.splitwise.exception.ServerException;

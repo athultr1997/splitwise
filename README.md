@@ -9,7 +9,8 @@
 * Amount credited to user is positive
 * Do not have to show balances that are settled with a user. Only show the ones that are lend or
   owed.
-  * Even if owes in balance shows as settled
+  * Created_at should be in request since offline working.
+* Even if owes in balance shows as settled
 
 # Future Scope
 

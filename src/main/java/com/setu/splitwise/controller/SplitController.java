@@ -4,7 +4,7 @@ import com.setu.splitwise.exception.ServerException;
 import com.setu.splitwise.model.request.CreateSplitRequest;
 import com.setu.splitwise.model.response.CreateSplitResponse;
 import com.setu.splitwise.model.response.GetSplitResponse;
-import com.setu.splitwise.service.domain.SplitService;
+import com.setu.splitwise.service.domain.core.SplitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
