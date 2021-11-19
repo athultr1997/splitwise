@@ -39,6 +39,12 @@ public class PaymentCreationService implements CreationService<Payment, CreateSe
     return payment;
   }
 
+  /**
+   * Chain of responsibility pattern is used for validation.
+   *
+   * @param request
+   * @throws ServerException
+   */
   private void validate(CreateSettlementRequest request) throws ServerException {
     settlementValidator.validate(request);
   }

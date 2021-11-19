@@ -13,7 +13,6 @@ import com.setu.splitwise.service.domain.split_strategy.SplitStrategyFactory;
 import com.setu.splitwise.service.domain.validator.split_validator.SplitBasicDetailsValidator;
 import com.setu.splitwise.service.domain.validator.split_validator.SplitValidator;
 import com.setu.splitwise.service.manager.SplitManager;
-import java.time.LocalDateTime;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,12 +65,26 @@ public class SplitCreationService implements CreationService<Split, CreateSplitR
         .build();
   }
 
+  /**
+   * Strategy pattern is being used for creating transactions using different algorithms.
+   *
+   * @param request
+   * @return
+   * @throws ServerException
+   */
   private Set<Transaction> constructTransactions(CreateSplitRequest request)
       throws ServerException {
     SplitStrategy splitStrategy = splitStrategyFactory.getSplitStrategy(request.getSplitType());
     return splitStrategy.createSplitTransactions(request);
   }
 
+  /**
+   * Strategy pattern is being used for creating bills.
+   *
+   * @param split
+   * @return
+   * @throws ServerException
+   */
   private Set<Bill> constructBills(Split split) throws ServerException {
     SettlementStrategy settlementStrategy = settlementStrategyFactory
         .getSettlementStrategy(SettlementType.DEFAULT);

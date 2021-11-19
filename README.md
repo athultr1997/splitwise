@@ -70,6 +70,23 @@ Password: password
 * see overview of the users splits and settlements
 * see the total balance amounts the user has to pay to or get from other users
 
+### Non-Functional Features
+
+* Settling the amount between a set of people who have borrowed money is one of the central features
+  of Splitwise. This is an NP-hard problem, hence the best we can come up with is a greedy solution.
+  The greedy algorithm is as follows:
+
+```
+1. Get all the amount paid by each member of the group of users and the total amount owed.
+2. Subtract the amount paid by the amount owed to get the amount to be settled for each user.
+3. From the list of users find the maximum debiter (maxDeb) and the maximum creditor (maxCred).The maximum creditor
+has the maximum amount to settle and the maximum debitor has the minimum amount to settle which
+were calculated in the last step.
+4. Pay as much amount as possible from maxDeb to maxCred till one of them becomes settled. This is the greedy choice.
+(i.e., settled amount becomes zero) (This will result in the creation of a bill that has to be settled in the code).
+5. Repeat steps 3 and 4 till all the amounts are settled.
+```
+
 ### Other Features
 
 * In splitwise the payment outlives the split that was used for created it. A payment entity has a
@@ -80,7 +97,6 @@ Password: password
 * Serializable is used extensively to resolve des/ser issues.
 * An Interceptor is used which intercepts all exceptions, prints a log and returns an error
   response. Therefore, we do not have to print a log when an exception occurs.
-* Greedy algorithm is used for settlement calculation. Discussed below.
 * Amount credited to the user is treated positive throughout the code.
 * In Splitwise, the balances that are settled with a user are not showed. Only the ones that are
   lent or owed is showed.

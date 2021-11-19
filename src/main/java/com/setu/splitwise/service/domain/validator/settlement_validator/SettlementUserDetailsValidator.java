@@ -20,6 +20,7 @@ public class SettlementUserDetailsValidator extends SettlementValidator {
     this.successor = settlementAmountValidator;
   }
 
+  @Override
   public void validate(CreateSettlementRequest request) throws ServerException {
     List<Long> userIds = request.getAllUserIds();
     if (userIds.size() < 2 || !userService.checkIfUserIdsExist(userIds)) {

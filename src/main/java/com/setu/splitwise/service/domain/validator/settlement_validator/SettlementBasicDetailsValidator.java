@@ -16,6 +16,7 @@ public class SettlementBasicDetailsValidator extends SettlementValidator {
     this.successor = settlementUserDetailsValidator;
   }
 
+  @Override
   public void validate(CreateSettlementRequest request) throws ServerException {
     if (request.getCreatedBy() == null
         || request.getCreditTo() == null

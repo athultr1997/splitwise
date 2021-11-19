@@ -14,6 +14,7 @@ public class SettlementAmountValidator extends SettlementValidator {
     this.successor = null;
   }
 
+  @Override
   public void validate(CreateSettlementRequest request) throws ServerException {
     if (request.getCreditTo().equals(request.getDebitFrom())
         || BigDecimal.ZERO.compareTo(request.getAmount()) > -1) {
